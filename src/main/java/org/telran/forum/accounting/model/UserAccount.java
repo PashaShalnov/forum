@@ -25,7 +25,12 @@ public class UserAccount {
 	@Singular
 	Set<String> roles;
 	
+	public UserAccount() {
+		roles = new HashSet<>((Arrays.asList("USER")));
+	}
+	
 	public UserAccount(String login, String password, String firstName, String lastName) {
+		this();
 		this.login = login;
 		this.password = password;
 		this.firstName = firstName;
@@ -39,5 +44,9 @@ public class UserAccount {
 
 	public boolean removeRole(String role) {
 		return roles.remove(role);
+	}
+
+	public UserAccount(Set<String> roles) {
+		this.roles = roles;
 	}
 }

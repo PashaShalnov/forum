@@ -11,7 +11,7 @@ public interface AccountService {
 	
 	UserDto findUser(String login);
 	
-	UserDto login(String login, String password);
+	UserDto login(String token);
 	
 	UserDto removeUser(String login);
 	
@@ -19,5 +19,5 @@ public interface AccountService {
 	
 	RolesRespDto changeRole(String login, String role, boolean addRole);
 		
-	boolean changePassword(String login, String password);
+	void changePassword(String login, String password);
 }

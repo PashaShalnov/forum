@@ -1,11 +1,14 @@
 package org.telran.forum.accounting.controller;
 
+import java.util.Base64;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.telran.forum.accounting.dto.NewUserDto;
@@ -34,8 +37,11 @@ public class UserAccountController {
 	}
 	
 	@PostMapping("/login")
-	public UserDto login(@RequestBody String login, @RequestBody String password) {
-		return accountService.login(login, password);
+	public UserDto login(@RequestHeader("Authorization") String token) {
+		String[] basicAuth = token.split(" ");
+		String decode = new String(Base64.getDecoder().decode(basicAuth[1]));
+		String[] credential = decode.split(":");
+		return accountService.findUser(credential[0]);
 	}
 	
 	@DeleteMapping("/user/{login}")
@@ -70,7 +76,7 @@ public class UserAccountController {
 //	}
 	
 	@PutMapping("/password")
-	public boolean changePassword(@RequestBody String login,@RequestBody String password) {
-		return accountService.changePassword(login, password);
+	public void changePassword(@RequestBody String login,@RequestBody String password) {
+		accountService.changePassword(login, password);
 	}
 }

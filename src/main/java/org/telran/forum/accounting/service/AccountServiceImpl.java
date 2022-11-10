@@ -25,9 +25,7 @@ public class AccountServiceImpl implements AccountService {
 		if (accountRepository.existsById(newUserDto.getLogin())) {
 			throw new UserExistsException(newUserDto.getLogin());
 		}
-		UserAccount user = new UserAccount(newUserDto.getLogin(), newUserDto.getPassword(),
-							newUserDto.getFirstName(), newUserDto.getLastName());
-//		UserAccount user = modelMapper.map(newUserDto, UserAccount.class);
+		UserAccount user = modelMapper.map(newUserDto, UserAccount.class);
 		accountRepository.save(user);
 		return modelMapper.map(user, UserDto.class);
 	}
@@ -40,7 +38,7 @@ public class AccountServiceImpl implements AccountService {
 
 	//??????? посмотреть урок сперва, потом доделать
 	@Override
-	public UserDto login(String login, String password) {
+	public UserDto login(String token) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -77,12 +75,11 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public boolean changePassword(String login, String password) {
-//		UserAccount user = accountRepository.findById(login).orElseThrow(() -> new UserNotFoundException());
-//		user.setLogin(login);
-//		user.setPassword(password);
-//		accountRepository.save(user);
-		return true;
+	public void changePassword(String login, String password) {
+		UserAccount user = accountRepository.findById(login).orElseThrow(() -> new UserNotFoundException());
+		user.setPassword(password);
+		accountRepository.save(user);
+	
 	}
 
 }
