@@ -1,5 +1,6 @@
 package org.telran.forum.accounting.service;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.telran.forum.accounting.dao.AccountRepository;
@@ -26,6 +27,8 @@ public class AccountServiceImpl implements AccountService {
 			throw new UserExistsException(newUserDto.getLogin());
 		}
 		UserAccount user = modelMapper.map(newUserDto, UserAccount.class);
+		String password = BCrypt.hashpw(newUserDto.getPassword(), BCrypt.gensalt());
+		user.setPassword(password);
 		accountRepository.save(user);
 		return modelMapper.map(user, UserDto.class);
 	}
@@ -77,9 +80,8 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public void changePassword(String login, String password) {
 		UserAccount user = accountRepository.findById(login).orElseThrow(() -> new UserNotFoundException());
-		user.setPassword(password);
+		String newpassword = BCrypt.hashpw(password, BCrypt.gensalt());
+		user.setPassword(newpassword);
 		accountRepository.save(user);
-	
 	}
-
 }

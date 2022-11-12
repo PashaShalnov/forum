@@ -1,5 +1,6 @@
 package org.telran.forum.accounting.controller;
 
+import java.security.Principal;
 import java.util.Base64;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +29,7 @@ public class UserAccountController {
 	
 	@PostMapping("/register")
 	public UserDto addUser(@RequestBody NewUserDto newUserDto) {
+		//TODO addUser - change to login 
 		return accountService.addUser(newUserDto);
 	}
 	
@@ -37,46 +39,37 @@ public class UserAccountController {
 	}
 	
 	@PostMapping("/login")
-	public UserDto login(@RequestHeader("Authorization") String token) {
-		String[] basicAuth = token.split(" ");
-		String decode = new String(Base64.getDecoder().decode(basicAuth[1]));
-		String[] credential = decode.split(":");
-		return accountService.findUser(credential[0]);
+	public UserDto login(Principal principal) {
+		return accountService.findUser(principal.getName());
 	}
 	
 	@DeleteMapping("/user/{login}")
+	//TODO плохо с авторизацией (может удалить кого удгодно) 
 	public UserDto removeUser(@PathVariable String login) {
 		return accountService.removeUser(login);
 	}
 	
 	@PutMapping("/user/{login}")
 	public UserDto updateUser(@PathVariable String login, @RequestBody UpdateUserDto updateUserDto) {
+		//TODO плохо с авторизацией - может апдейтить любого
 		return accountService.updateUser(login, updateUserDto);
 	}
 	
 	@PutMapping("/user/{login}/role/{role}")
 	public RolesRespDto addRole(@PathVariable String login, @PathVariable String role) {
+		//TODO плохо с авторизацией - может апдейтить любого
+
 		return accountService.changeRole(login, role, true);
 	}
 
 	@DeleteMapping("/user/{login}/role/{role}")
 	public RolesRespDto removeRole(@PathVariable String login, @PathVariable String role) {
+		//TODO плохо с авторизацией - может апдейтить любого
 		return accountService.changeRole(login, role, false);
 	}
 	
-	
-//	@PutMapping("/user/{login}/role/{role}")
-//	public RolesRespDto addRole(@PathVariable String login, @PathVariable String role) {
-//		return accountService.addRole(login, role);
-//	}
-//
-//	@PutMapping("/user/{login}/role/{role}")
-//	public RolesRespDto removeRole(@PathVariable String login, @PathVariable String role) {
-//		return accountService.removeRole(login, role);
-//	}
-	
 	@PutMapping("/password")
-	public void changePassword(@RequestBody String login,@RequestBody String password) {
-		accountService.changePassword(login, password);
+	public void changePassword(Principal principal, @RequestHeader("X-Password") String newPassword) {
+		accountService.changePassword(principal.getName(), newPassword);
 	}
 }
